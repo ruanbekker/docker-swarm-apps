@@ -6,7 +6,7 @@
 
 ```
 $ ls
-Dockerfile  traefik.toml  traefik.yml
+Dockerfile  traefik.toml  docker-compose.yml
 ```
 
 ## Build and Push:
