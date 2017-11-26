@@ -17,3 +17,9 @@ $ service create --name proxy_nginx \
 --with-registry-auth \
 registry.gitlab.com/<user>/<repo>/proxy-nginx:<tag>
 ```
+
+or using stacks:
+
+```
+$ docker stack deploy --compose-file docker-compose.yml loadbalancer
+```
