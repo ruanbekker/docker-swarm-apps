@@ -13,8 +13,8 @@
 
 ```
 $ docker login registry.domain.com
-$ docker build -t registry.domain.com/user/repo:tag .
-$ docker push registry.domain.com/user/repo:tag
+$ docker build -t registry.domain.com/user/repo/image:tag .
+$ docker push registry.domain.com/user/repo/image:tag
 ```
 
 ## Deploy the Stack:
