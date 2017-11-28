@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  ruan-test:
+    image: registry.domain.com/repo/user:tag
+    networks:
+      - appnet
+    environment:
+      - OWNER=RUAN
+      - VERSION=${HOST_ENV_VAR}
+      - PHP_SHORT_OPEN_TAG=On
+      - PHP_ERROR_REPORTING=E_ALL
+      - PHP_DISPLAY_ERRORS=On
+      - PHP_HTML_ERRORS=On
+    deploy:
+      labels:
+        - "traefik.port=80"
+        - "traefik.docker.network=appnet" 
+        - "traefik.frontend.rule=Host:domain.com,www.domain.com; PathPrefix: /test/"
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - 'node.role==worker'
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 64M
+        reservations:
+          cpus: '0.001'
+          memory: 32M
+
+networks:
+  appnet:
+    external: true
