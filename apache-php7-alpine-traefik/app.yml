@@ -2,7 +2,7 @@ version: '3'
 
 services:
   ruan-test:
-    image: registry.domain.com/repo/user:tag
+    image: registry.domain.com/repo/user/image:tag
     networks:
       - appnet
     environment:
