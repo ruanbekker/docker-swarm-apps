@@ -1,0 +1,23 @@
+version: "3.3"
+
+services:
+  web_object_store:
+    image: {user}/{repo}/{image}:{tag}
+    networks:
+      - appnet
+    environment:
+      - DEPLOY=1
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+      - type: bind
+        source: /var/web/html
+        target: /var/www/localhost/htdocs
+    deploy:
+      mode: replicated
+      replicas: 1
+
+networks:
+  appnet:
+    external: true
