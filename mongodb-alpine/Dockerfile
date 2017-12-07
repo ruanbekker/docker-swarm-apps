@@ -6,6 +6,6 @@ RUN apk add --no-cache mongodb && \
     rm /usr/bin/mongoperf && \
     rm -rf /var/cache/apk/*
 
-COPY run.sh /root/run.sh
+COPY boot.sh /root/boot.sh
 
 CMD [ "sh", "/root/run.sh", "mongod" ]
