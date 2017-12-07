@@ -9,7 +9,6 @@ fi
 # removes lockfile from persistent storage on boot
 if [ -f "/data/db/mongod.lock" ]
   then rm -f /data/db/mongod.lock
-  else "lock file to be created by service"
 fi
 
 # docker entrypoint (pid 1), run as root user
