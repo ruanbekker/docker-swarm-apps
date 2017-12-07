@@ -8,4 +8,4 @@ RUN apk add --no-cache mongodb && \
 
 COPY boot.sh /root/boot.sh
 
-CMD [ "sh", "/root/run.sh", "mongod" ]
+CMD [ "sh", "/root/boot.sh", "mongod" ]
