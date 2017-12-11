@@ -11,7 +11,7 @@ if [ -f "/data/db/mongod.lock" ]
   then rm -f /data/db/mongod.lock
 fi
 
-# docker entrypoint (pid 1), run as root user
+# docker entrypoint, run as root user
 [ "$1" = "mongod" ] || exec "$@" || exit $?
 
 # ensure db is owned by user mongodb
