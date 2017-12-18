@@ -1,0 +1,16 @@
+version: "3.3"
+
+services:
+  ruanbekker:
+    image: registry.gitlab.com/rbekker87/docker/alpine:php-ruanbekker
+    networks:
+      - appnet
+    environment:
+      - DEPLOY=1
+    deploy:
+      mode: replicated
+      replicas: 1
+
+networks:
+  appnet:
+    external: true
