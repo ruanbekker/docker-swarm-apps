@@ -3,7 +3,7 @@ version: '3'
 services:
   traefik:
     image: registry.gitlab.com/u1t/docker/traefik:latest
-    command: --web --docker --docker.swarmmode --logLevel=DEBUG
+    command: --web --docker --docker.swarmmode --logLevel=DEBUG --accesslog --accesslog.format="json"
     networks:
       - appnet
     deploy:
