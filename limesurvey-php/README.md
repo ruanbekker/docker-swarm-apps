@@ -14,8 +14,8 @@ Limesurvey Application on Docker
 Clone the repository:
 
 ```
-$ git clone {}
-$ cd {}
+$ git clone https://github.com/ruanbekker/docker-swarm-apps
+$ cd docker-swarm-apps/limesurvey-php
 ```
 
 Getting the Source:
