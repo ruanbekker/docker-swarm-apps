@@ -24,6 +24,14 @@ Getting the Source:
 $ wget --content-disposition -O limesurvey.tar.gz 'https://github.com/LimeSurvey/LimeSurvey/archive/3.2.1+180207.tar.gz'
 ```
 
+Build the Image:
+
+```
+$ docker login
+$ docker build -t youruser/limesurvey:3.2.1 .
+$ docker push youruser/limesurvey:3.2.1
+```
+
 Deploy the stack:
 
 ```
