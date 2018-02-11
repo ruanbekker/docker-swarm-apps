@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  app:
+    image: registry.gitlab.com/user/repo/limesurvey:3.2.1
+    ports:
+      - 80:80
+  
+  db:
+    image: mysql:5.6
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
