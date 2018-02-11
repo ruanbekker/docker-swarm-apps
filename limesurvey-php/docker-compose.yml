@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   app:
-    image: registry.gitlab.com/user/repo/limesurvey:3.2.1
+    image: youruser/limesurvey:3.2.1
     ports:
       - 80:80
   
