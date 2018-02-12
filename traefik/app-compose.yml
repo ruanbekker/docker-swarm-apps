@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  blog-searchindex:
+    image: registry.gitlab.com/u1t/docker/web_flask-search:dev3
+    networks:
+      - appnet
+    environment:
+      - "APP_NAME=blog_searchindex"
+      - "APP_OWNER=ruan"
+      - "ES_HOST=10.0.0.5"
+    healthcheck:
+      test: curl -f http://localhost:5000/status || exit 1
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    deploy:
+      labels:
+        - traefik.port: 5000
+        - traefik.backend.loadbalancer.swarm: "true"
+        - traefik.docker.network: "appnet"
+        - traefik.frontend.rule: "Host:search.ruanbekker.com, search.cloud.ruanbekker.com; PathPrefix: /"
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 1
+        delay: 70s
+        order: start-first
+        failure_action: rollback
+      placement:
+        constraints:
+          - 'node.role==worker'
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 128M
+        reservations:
+          cpus: '0.001'
+          memory: 64M
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "tcp://10.0.5.12:123"
+
+networks:
+  appnet:
+    external: true
