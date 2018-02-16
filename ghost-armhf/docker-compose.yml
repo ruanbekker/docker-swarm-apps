@@ -1,0 +1,51 @@
+version: "3.2"
+
+services:
+  blog:
+    image: alexellis2/ghost-on-docker:armv7
+    networks:
+      - docknet
+    volumes:
+      - type: bind
+        source: /mnt/volumes/ghost/content/data
+        target: /var/www/ghost/content/data
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.backend=blog"
+        - "traefik.port=2368"
+        - "traefik.frontend.rule=Host:rbkr.ddns.net,blog.pistack.co.za"
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == worker]
+    healthcheck:
+      test: nc -vz 127.0.0.1 2368 || exit 1
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  hypriot_web:
+    image: hypriot/rpi-busybox-httpd
+    networks:
+      - docknet
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.backend=hypriot_web"
+        - "traefik.port=80"
+        - "traefik.frontend.rule=Host:www.pistack.co.za"
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == worker]
+
+networks:
+  docknet:
+    external: true
