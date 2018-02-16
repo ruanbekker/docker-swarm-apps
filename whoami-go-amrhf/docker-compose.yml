@@ -1,0 +1,29 @@
+version: "3.2"
+
+services:
+  whoami:
+    image: rbekker87/golang-whoami:alpine-amrhf
+    networks:
+      - docknet
+    deploy:
+      replicas: 10
+      labels:
+        - "traefik.backend=whoami"
+        - "traefik.port=80"
+        - "traefik.frontend.rule=Host:whoami.pistack.co.za"
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == worker]
+    healthcheck:
+      test: nc -vz 127.0.0.1 80 || exit 1
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+networks:
+  docknet:
+    external: true
