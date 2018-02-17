@@ -1,0 +1,22 @@
+version: "3.2"
+
+services:
+  whoami:
+    image: emilevauge/whoami
+    networks:
+      - appnet
+    ports:
+      - 8081:80
+    deploy:
+      replicas: 10
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == worker]
+
+networks:
+  appnet:
+    external: true
