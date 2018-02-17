@@ -6,7 +6,7 @@ services:
     networks:
       - appnet
     ports:
-      - 8000:8000
+      - 8000:5000
     deploy:
       replicas: 10
       update_config:
