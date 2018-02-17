@@ -1,0 +1,20 @@
+version: "3.3"
+
+services:
+  mysql:
+    image: mysql
+    networks:
+      - appnet
+    environment:
+      - MYSQL_USER=dba
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE_DATABASE=mydb
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+networks:
+  appnet:
+    external: true
