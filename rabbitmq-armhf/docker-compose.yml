@@ -1,0 +1,22 @@
+version: "3.3"
+
+services:
+  redis:
+    image: hypriot/rpi-redis
+    networks:
+      - appnet
+    deploy:
+      mode: replicated
+      replicas: 1
+      
+  rabbitmq:
+    image: rbekker87/rabbitmq-armhf:3.7.3
+    networks:
+      - appnet
+    deploy:
+      mode: replicated
+      replicas: 1
+
+networks:
+  appnet:
+    external: true
