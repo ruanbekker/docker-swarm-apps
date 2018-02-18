@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   redis:
-    image: hypriot/rpi-redis
+    image: rbekker87/redis-armhf:4.0.6
     networks:
       - appnet
     deploy:
