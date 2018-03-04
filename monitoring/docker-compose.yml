@@ -1,0 +1,81 @@
+version: '3.4'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.5.3
+    networks:
+      - appnet
+    environment:
+      - discovery.type=single-node
+    ports:
+      - 9200:9200
+    deploy:
+      mode: replicated
+      restart_policy:
+        condition: any
+      placement:
+        constraints: 
+          - 'node.role==worker'
+      replicas: 1
+
+  kibana:
+    image: kibana:latest
+    environment:
+        - ELASTICSEARCH_URL=http://elastic:changeme@elasticsearch:9200
+    networks:
+      - appnet
+    deploy:
+      labels:
+        - "traefik.port=5601"
+        - "traefik.backend.loadbalancer.swarm=true"
+        - "traefik.docker.network=appnet"
+        - "traefik.frontend.rule=Host:kibana.domain.com; PathPrefix: /"
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+      placement:
+        constraints:
+          - 'node.role==worker'
+
+  metricbeat:
+    image: docker.elastic.co/beats/metricbeat:6.2.2
+    networks:
+      - appnet
+    volumes:
+      - /proc:/hostfs/proc:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /:/hostfs:ro
+      - /etc/hostname:/etc/host_hostname
+    environment:
+      HOST_HOSTNAME: /etc/host_hostname
+    command: -system.hostfs=/hostfs
+    deploy:
+      restart_policy:
+        condition: any
+      mode: global
+
+  grafana:
+    image: grafana/grafana:latest
+    networks:
+      - appnet
+    volumes:
+      - grafana:/var/lib/grafana/plugins
+    environment:
+      ELASTICSEARCH_ENDPOINT: ${ES_ADDRESS:-http://elastic:changeme@elasticsearch:9200}
+    deploy:
+      labels:
+        - "traefik.backend=grafana"
+        - "traefik.port=3000"
+        - "traefik.frontend.rule=Host:grafana.domain.com"
+        - "traefik.docker.network=appnet"
+      mode: replicated
+      restart_policy:
+        condition: any
+      placement:
+        constraints: [node.role == worker]
+      replicas: 1
+
+networks:
+  appnet:
+    external: true
