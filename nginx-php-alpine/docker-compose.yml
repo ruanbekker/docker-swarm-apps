@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  offsupp:
+    image: registry.gitlab.com/{user}/docker/web_offsup:dev
+    networks:
+      - appnet
+    deploy:
+      labels:
+        - "traefik.port=80"
+        - "traefik.docker.network=appnet" 
+        - "traefik.frontend.rule=Host:domain.net,www.domain.net; PathPrefix: /"
+      mode: replicated
+      replicas: 2
+      placement:
+        constraints:
+          - 'node.role==worker'
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 64M
+        reservations:
+          cpus: '0.001'
+          memory: 32M
+
+networks:
+  appnet:
+    external: true
