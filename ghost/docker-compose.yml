@@ -1,0 +1,30 @@
+version: '3.4'
+
+services:
+  blog:
+    image: ghost:1.22.7-alpine
+    networks:
+      - appnet
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == worker]
+      labels:
+        - "traefik.backend.loadbalancer.sticky=false"
+        - "traefik.backend.loadbalancer.swarm=true"
+        - "traefik.backend=blog-1"
+        - "traefik.docker.network=appnet"
+        - "traefik.entrypoints=https"
+        - "traefik.frontend.passHostHeader=true"
+        - "traefik.frontend.rule=Host:blog-1.x.domain.co.za"
+        - "traefik.port=2368"
+
+networks:
+  appnet:
+    external: true
