@@ -1,0 +1,38 @@
+version: '3.4'
+
+services:
+  flaskweb:
+    image: rbekker87/flask-redis:alpine
+    networks:
+      - appnet
+    deploy:
+      replicas: 10
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == worker]
+      labels:
+        - "traefik.backend.loadbalancer.sticky=false"
+        - "traefik.backend.loadbalancer.swarm=true"
+        - "traefik.backend=flaskweb"
+        - "traefik.docker.network=appnet"
+        - "traefik.entrypoints=https"
+        - "traefik.frontend.passHostHeader=true"
+        - "traefik.frontend.rule=Host:flask-redis.apps.mydomain.co.za"
+        - "traefik.port=5000"
+
+  redis:
+    image: redis:alpine
+    networks:
+      - appnet
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == worker]
+
+networks:
+  appnet:
+    external: true
