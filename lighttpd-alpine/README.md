@@ -11,3 +11,6 @@ Content resides under `/var/www/localhost/htdocs`
 ```bash
 $ docker stack deploy -c docker-compose.yml apps
 ```
+
+## Docker Hub Images:
+- [Rick Ashley](rbekker87/static-web:rick)
