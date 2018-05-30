@@ -1,0 +1,50 @@
+version: "3.4"
+
+services:
+  q2aweb:
+    image: disrvptor/question2answer
+    networks:
+      - appnet
+    environment:
+      QUESTION2ANSWER_DB_USER: q2a
+      QUESTION2ANSWER_DB_PASSWORD: pass
+      QUESTION2ANSWER_DB_NAME: question2answer
+      QUESTION2ANSWER_DB_HOST: q2adb
+    deploy:
+      placement:
+        constraints: [node.role == worker]
+      labels:
+        traefik.port: 80
+        traefik.backend: "q2aweb"
+        traefik.frontend.rule: "Host: qna.domain.com"
+        traefik.docker.network: "appnet"
+      update_config:
+        parallelism: 1
+        delay: 30s
+        order: start-first
+        failure_action: rollback
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+
+  q2adb:
+    image: mariadb
+    networks:
+      - appnet
+    environment:
+      MYSQL_USER: q2a
+      MYSQL_PASSWORD: pass
+      MYSQL_DATABASE: question2answer
+      MYSQL_ROOT_PASSWORD: secretpass
+    deploy:
+      placement:
+        constraints: [node.role == worker]
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+
+networks:
+  appnet:
+    external: true
