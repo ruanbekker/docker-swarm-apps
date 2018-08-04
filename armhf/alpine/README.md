@@ -1,10 +1,10 @@
 ## Mini Root Filesystem 
-- https://nl.alpinelinux.org/alpine/v3.5/releases/armhf/
+- https://alpinelinux.org/downloads/
 
 Download:
 
 ```
-$ wget https://nl.alpinelinux.org/alpine/v3.5/releases/armhf/alpine-minirootfs-3.5.1-armhf.tar.gz
+$ wget http://dl-cdn.alpinelinux.org/alpine/v3.8/releases/armhf/alpine-minirootfs-3.8.0-armhf.tar.gz
 ```
 
 Dockerfile:
@@ -12,7 +12,7 @@ Dockerfile:
 ```
 FROM scratch
 
-ADD alpine-minirootfs-3.5.1-armhf.tar.gz /
+ADD alpine-minirootfs-3.8.0-armhf.tar.gz /
 
 CMD ["/bin/sh"]
 ```
