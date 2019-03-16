@@ -1,17 +1,41 @@
-version: '3.1'
+version: "3.5"
 services:
-  consul:
-  image: consul
-    command: agent -server -ui -client=0.0.0.0 -bootstrap-expect=3 -retry-join=consul -retry-join=consul -retry-join=consul -retry-interval 5s
-    deploy:
-      replicas: 3
+  consul-leader:
     ports:
       - 8500:8500
+    image: consul
+    command: agent -server -client=0.0.0.0 -bootstrap -ui
+    volumes:
+      - consul-data-leader:/consul/data
     environment:
-      CONSUL_BIND_INTERFACE: 'eth2'
-      CONSUL_LOCAL_CONFIG: '{"skip_leave_on_interrupt": true}'
+      - CONSUL_BIND_INTERFACE=eth0
+      - 'CONSUL_LOCAL_CONFIG={"leave_on_terminate": true}'
     networks:
       - consul
+  consul-replica:
+    image: consul
+    command: agent -server -client=0.0.0.0 -retry-join="consul-leader"
+    volumes:
+      - consul-data-replica:/consul/data
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+      - 'CONSUL_LOCAL_CONFIG={"leave_on_terminate": true}'
+    networks:
+      - consul
+    deploy:
+      replicas: ${CONSUL_REPLICAS:-3}
+      placement:
+        preferences:
+          - spread: node.id
+
+volumes:
+  consul-data-leader:
+    driver: local
+    name: "consol-data-leader"
+  consul-data-replica:
+    driver: local
+    name: "consol-data-replica"
 
 networks:
    consul:
+     driver: overlay
