@@ -1,0 +1,71 @@
+version: "3.5"
+
+services:
+  fluentd:
+    image: ruanbekker/fluentd:alpha
+    environment:
+      - FLUENTD_CONF=fluent.conf
+    configs:
+      - source: fluentd_config
+        target: /fluentd/etc/fluent.conf
+    volumes:
+      - /tmp/logs:/fluentd/log
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    networks:
+      - appnet
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 20s
+        max_attempts: 3
+        window: 120s
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      update_config:
+        delay: 2s
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.3.1
+    networks:
+      - appnet
+    environment:
+      - SERVER_NAME=https://kibana.${DOMAIN}
+      - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_URL}
+      - XPACK_MONITORING_ENABLED=false
+      - ELASTICSEARCH_URL=${ELASTICSEARCH_URL}:9200
+      - ELASTICSEARCH_USERNAME=x
+      - ELASTICSEARCH_PASSWORD=x
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - "traefik.backend.loadbalancer.sticky=false"
+        - "traefik.backend.loadbalancer.swarm=true"
+        - "traefik.backend=kibana"
+        - "traefik.docker.network=appnet"
+        - "traefik.entrypoints=https"
+        - "traefik.frontend.passHostHeader=true"
+        - "traefik.frontend.rule=Host:kibana.${DOMAIN}"
+        - "traefik.port=5601"
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.{{.Name}}.fluentd_kibana
+        #fluentd-address: 127.0.0.1:24224
+        fluentd-async-connect: 'true'
+        fluentd-retry-wait: '1s'
+        fluentd-max-retries: '30'
+        labels: dev.ruan.kibana
+        #env: SERVICE_NAME, SERVICE_TAGS
+
+configs:
+  fluentd_config:
+    file: ./fluent.conf
+
+networks:
+  appnet:
+    external: true
